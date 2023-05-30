@@ -1,10 +1,10 @@
 #!/bin/sh
-REPOS="https://github.com/myridwan/abc/raw/ipuk/"
+REPOS="https://github.com/rizkihdyt6/scupdate/raw/rizki/"
 ns_domain_cloudflare() {
-	DOMAIN="aixxy.tech"
+	DOMAIN="aixxy.cloud"
 	DOMAIN_PATH=$(cat /etc/xray/domain)
 	SUB=$(tr </dev/urandom -dc a-z0-9 | head -c7)
-	SUB_DOMAIN=${SUB}."aixxy.tech"
+	SUB_DOMAIN=${SUB}."aixxy.cloud"
 	NS_DOMAIN=dns.${SUB_DOMAIN}
 	CF_ID=zkendev@gmail.com
         CF_KEY=c0edd90f0a64eea5009e21ebd3189c1c9eccc
