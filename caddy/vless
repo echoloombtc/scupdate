@@ -2,7 +2,7 @@
 @ws_path {
 path /worryfree
 path /vless
-path /aixxy
+path /aixxyssh
 path /*
 
 }
