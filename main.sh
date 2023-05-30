@@ -29,7 +29,7 @@ checking_sc() {
     echo -e "   \033[0;33mYour VPS${NC} $ipsaya \033[0;33mHas been Banned${NC}"
     echo -e "     \033[0;33mBuy access permissions for scripts${NC}"
     echo -e "             \033[0;33mContact Admin :${NC}"
-    echo -e "      \033[0;36mTelegram${NC} t.me/mainHdyt99"
+    echo -e "      \033[0;36mTelegram${NC} t.me/RizkiHdyt99"
     echo -e "      ${GREEN}WhatsApp${NC} wa.me/6285871027196"
     echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
     exit
@@ -182,33 +182,6 @@ function add_domain() {
     clear
 }
 
-### Pasang Haproxy Core
-function pasang_haproxy() {
-    print_install "pasang core haproxy"
-       mkdir /etc/haproxy
-    wget -O /usr/sbin/ftvpn "https://github.com/FighterTunnel/tunnel/raw/main/fodder/FighterTunnel-examples/ftvpn" >/dev/null 2>&1
-    chmod +x /usr/sbin/ftvpn
-    cat >/lib/systemd/system/haproxy.service <<EOF
-[Unit]
-Description=FighterTunnel Load Balancer
-Documentation=https://github.com/FighterTunnel
-After=network-online.target rsyslog.service
-
-[Service]
-ExecStart=/usr/sbin/ftvpn -Ws -f /etc/haproxy/haproxy.cfg -p 18173 
-Restart=on-failure
-RestartPreventExitStatus=23
-LimitNPROC=10000
-LimitNOFILE=1000000
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl daemon-reload
-EOF
-print_success "haproxy C0re"
-}
-
 ### Pasang SSL
 function pasang_ssl() {
     print_install "Memasang SSL pada domain"
@@ -240,7 +213,7 @@ function install_xray(){
     mv xray /usr/sbin/xray
     print_success "Xray Core"
     
-    cat /etc/xray/xray.crt /etc/xray/xray.key
+    cat /etc/xray/xray.crt /etc/xray/xray.key | tee /etc/haproxy/xray.pem
     wget -O /etc/xray/config.json "${REPO}xray/config.json" >/dev/null 2>&1 
     #wget -O /usr/sbin/xray/ "${REPO}bin/xray" >/dev/null 2>&1
     wget -O /usr/sbin/websocket "${REPO}bin/ws" >/dev/null 2>&1
@@ -311,6 +284,7 @@ function pasang_rclone() {
 ### Ambil Konfig
 function download_config(){
     print_install "Memasang konfigurasi paket konfigurasi"
+    wget -O /etc/haproxy/haproxy.cfg "${REPO}config/haproxy.cfg" >/dev/null 2>&1
     wget -O /etc/nginx/conf.d/protokol.conf "${REPO}config/geovpn.conf" >/dev/null 2>&1
     sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/protokol.conf
     wget -O /etc/nginx/nginx.conf "${REPO}config/nginx.conf" >/dev/null 2>&1
@@ -322,6 +296,27 @@ function download_config(){
     echo "* - nofile 65535" >> /etc/security/limits.conf
     mkdir -p /etc/sysconfig/
     echo "ulimit -n 65535" >> /etc/sysconfig/squid
+
+    # > core Haproxy
+    wget -O /usr/sbin/ftvpn "${REPO}config/ftvpn" >/dev/null 2>&1
+    mkdir /etc/haproxy
+    chmod +x /usr/sbin/ftvpn
+    cat >/lib/systemd/system/haproxy.service <<EOF
+[Unit]
+Description=FighterTunnel Load Balancer
+Documentation=https://github.com/FighterTunnel
+After=network-online.target rsyslog.service
+
+[Service]
+ExecStart=/usr/sbin/ftvpn -Ws -f /etc/haproxy/haproxy.cfg -p 18173 
+Restart=on-failure
+RestartPreventExitStatus=23
+LimitNPROC=10000
+LimitNOFILE=1000000
+
+[Install]
+WantedBy=multi-user.target
+EOF
 
     # > Add Dropbear
     apt install dropbear -y
@@ -472,7 +467,7 @@ cat >/root/tmp <<-END
 ### mainHdytstoreVPN $TANGGAL $MYIP
 END
 ####
-mainHDYTPROJECT() {
+RIZKIHDYTPROJECT() {
     data=($(cat /root/tmp | grep -E "^### " | awk '{print $2}'))
     for user in "${data[@]}"; do
         exp=($(grep -E "^### $user" "/root/tmp" | awk '{print $3}'))
@@ -547,6 +542,7 @@ function finish(){
     curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
     cp /etc/openvpn/*.ovpn /var/www/html/
     # > sed -i "s/xxx/${domain}/g" /var/www/html/index.html
+    sed -i "s/xxx/${domain}/g" /etc/haproxy/haproxy.cfg
     sed -i "s/xxx/${MYIP}/g" /etc/squid/squid.conf
     chown -R www-data:www-data /etc/msmtprc
 
@@ -606,7 +602,7 @@ echo ""
 
 }
 cd /tmp
-mainHDYTPROJECT
+RIZKIHDYTPROJECT
 first_setup
 dir_xray
 add_domain
