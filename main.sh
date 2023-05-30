@@ -1,6 +1,4 @@
 #!/bin/bash
-
-### Color
 Green="\e[92;1m"
 RED="\033[31m"
 YELLOW="\033[33m"
@@ -14,23 +12,48 @@ GRAY="\e[1;30m"
 NC='\e[0m'
 red='\e[1;31m'
 green='\e[0;32m'
+ipsaya=$(wget -qO- ipinfo.io/ip)
+data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
+date_list=$(date +"%Y-%m-%d" -d "$data_server")
+data_ip="https://raw.githubusercontent.com/kenDevXD/izinsc/main/ip"
+checking_sc() {
+  useexp=$(wget -qO- $data_ip | grep $ipsaya | awk '{print $3}')
+  if [[ $date_list < $useexp ]]; then
+    echo -ne
+  else
+    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
+    echo -e "\033[42m          404 NOT FOUND AUTOSCRIPT          \033[0m"
+    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
+    echo -e ""
+    echo -e "            ${RED}PERMISSION DENIED !${NC}"
+    echo -e "   \033[0;33mYour VPS${NC} $ipsaya \033[0;33mHas been Banned${NC}"
+    echo -e "     \033[0;33mBuy access permissions for scripts${NC}"
+    echo -e "             \033[0;33mContact Admin :${NC}"
+    echo -e "      \033[0;36mTelegram${NC} t.me/mainHdyt99"
+    echo -e "      ${GREEN}WhatsApp${NC} wa.me/6285871027196"
+    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
+    exit
+  fi
+}
+checking_sc
+
 
 ### System Information
 TANGGAL=$(date '+%Y-%m-%d')
 TIMES="10"
 NAMES=$(whoami)
 IMP="wget -q -O"    
-CHATID="5491480146"
+CHATID="1316596937"
 LOCAL_DATE="/usr/bin/"
 MYIP=$(wget -qO- ipinfo.io/ip)
 ISP=$(wget -qO- ipinfo.io/org)
 CITY=$(curl -s ipinfo.io/city)
 TIME=$(date +'%Y-%m-%d %H:%M:%S')
 RAMMS=$(free -m | awk 'NR==2 {print $2}')
-KEY="5971208176:AAFkXhVOeTuOdKxoFJWkijyUq7LR1JwUuCA"
+KEY="6003347945:AAHv1Ti4HQliYwpYm8sbKrriDkSMqqJLUqE"
 URL="https://api.telegram.org/bot$KEY/sendMessage"
-REPO="https://raw.githubusercontent.com/kenDevXD/abc/main/"
-CDNF="https://raw.githubusercontent.com/kenDevXD/abc/main"
+REPO="https://raw.githubusercontent.com/kenDevXD/scupdate/main/"
+CDNF="https://raw.githubusercontent.com/kenDevXD/scupdate/main"
 APT="apt-get -y install "
 domain=$(cat /root/domain)
 start=$(date +%s)
@@ -92,16 +115,18 @@ function base_package() {
     sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null 2>&1
     sysctl -w net.ipv6.conf.default.disable_ipv6=1  >/dev/null 2>&1
     sudo apt install software-properties-common -y
-    sudo add-apt-repository ppa:vbernat/haproxy-2.7 -y
     sudo apt update && apt upgrade -y
     # linux-tools-common util-linux  \
     sudo apt install squid nginx zip pwgen openssl netcat bash-completion  \
     curl socat xz-utils wget apt-transport-https dnsutils socat chrony \
-    tar wget curl ruby zip unzip p7zip-full python3-pip haproxy libc6  gnupg gnupg2 gnupg1 \
     msmtp-mta ca-certificates bsd-mailx iptables iptables-persistent netfilter-persistent \
     net-tools  jq openvpn easy-rsa python3-certbot-nginx p7zip-full tuned fail2ban -y
     apt-get clean all; sudo apt-get autoremove -y
     apt-get install lolcat -y
+    apt-get install vnstat -y
+    apt-get install cron -y
+    apt-get install lsof -y
+    apt-get install curl -y
     gem install lolcat
     print_ok "Berhasil memasang paket yang dibutuhkan"
 }
@@ -110,12 +135,13 @@ clear
 ### Buat direktori xray
 function dir_xray() {
     print_install "Membuat direktori xray"
-    mkdir -p /etc/{xray,vmess,websocket,vless,trojan,shadowsocks}
+    mkdir -p /etc/{xray,vmess,websocket,vless,trojan,shadowsocks,bot}
     # mkdir -p /usr/sbin/xray/
+    mkdir -p /root/.install.log
     mkdir -p /var/log/xray/
     mkdir -p /var/www/html/
-    mkdir -p /etc/geostore/
-#    chmod +x /var/log/xray
+    mkdir -p /etc/mainhdyt/
+    # chmod +x /var/log/xray
     touch /var/log/xray/{access.log,error.log}
     chmod 777 /var/log/xray/*.log
     touch /etc/vmess/.vmess.db
@@ -123,6 +149,7 @@ function dir_xray() {
     touch /etc/trojan/.trojan.db
     touch /etc/ssh/.ssh.db
     touch /etc/shadowsocks/.shadowsocks.db
+    touch /etc/bot/.bot.db
     clear
 }
 
@@ -138,7 +165,6 @@ function add_domain() {
 
     if test $dom -eq 1; then
     clear
-    apt install jq curl -y
     wget -q -O /root/cf "${CDNF}/cf" >/dev/null 2>&1
     chmod +x /root/cf
     bash /root/cf | tee /root/install.log
@@ -154,6 +180,33 @@ function add_domain() {
     echo -e "${GREEN}Done!${NC}"
     sleep 2
     clear
+}
+
+### Pasang Haproxy Core
+function pasang_haproxy() {
+    print_install "pasang core haproxy"
+       mkdir /etc/haproxy
+    wget -O /usr/sbin/ftvpn "https://github.com/FighterTunnel/tunnel/raw/main/fodder/FighterTunnel-examples/ftvpn" >/dev/null 2>&1
+    chmod +x /usr/sbin/ftvpn
+    cat >/lib/systemd/system/haproxy.service <<EOF
+[Unit]
+Description=FighterTunnel Load Balancer
+Documentation=https://github.com/FighterTunnel
+After=network-online.target rsyslog.service
+
+[Service]
+ExecStart=/usr/sbin/ftvpn -Ws -f /etc/haproxy/haproxy.cfg -p 18173 
+Restart=on-failure
+RestartPreventExitStatus=23
+LimitNPROC=10000
+LimitNOFILE=1000000
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+EOF
+print_success "haproxy C0re"
 }
 
 ### Pasang SSL
@@ -183,11 +236,11 @@ function install_xray(){
     xray_latest="$(curl -s https://api.github.com/repos/dharak36/Xray-core/releases | grep tag_name | sed -E 's/.*"v(.*)".*/\1/' | head -n 1)"
     xraycore_link="https://github.com/dharak36/Xray-core/releases/download/v$xray_latest/xray.linux.64bit"
     curl -sL "$xraycore_link" -o xray
-#    unzip -q xray.zip && rm -rf xray.zip
+    # > unzip -q xray.zip && rm -rf xray.zip
     mv xray /usr/sbin/xray
     print_success "Xray Core"
     
-    cat /etc/xray/xray.crt /etc/xray/xray.key | tee /etc/haproxy/xray.pem
+    cat /etc/xray/xray.crt /etc/xray/xray.key
     wget -O /etc/xray/config.json "${REPO}xray/config.json" >/dev/null 2>&1 
     #wget -O /usr/sbin/xray/ "${REPO}bin/xray" >/dev/null 2>&1
     wget -O /usr/sbin/websocket "${REPO}bin/ws" >/dev/null 2>&1
@@ -258,11 +311,10 @@ function pasang_rclone() {
 ### Ambil Konfig
 function download_config(){
     print_install "Memasang konfigurasi paket konfigurasi"
-    wget -O /etc/haproxy/haproxy.cfg "${REPO}config/haproxy.cfg" >/dev/null 2>&1
-    wget -O /etc/nginx/conf.d/geostore.conf "${REPO}config/geovpn.conf" >/dev/null 2>&1
-    sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/geostore.conf
+    wget -O /etc/nginx/conf.d/protokol.conf "${REPO}config/geovpn.conf" >/dev/null 2>&1
+    sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/protokol.conf
     wget -O /etc/nginx/nginx.conf "${REPO}config/nginx.conf" >/dev/null 2>&1
-    # curl "${REPO}caddy/install.sh" | bash 
+    # > curl "${REPO}caddy/install.sh" | bash 
     wget -q -O /etc/squid/squid.conf "${REPO}config/squid.conf" >/dev/null 2>&1
     echo "visible_hostname $(cat /etc/xray/domain)" /etc/squid/squid.conf
     mkdir -p /var/log/squid/cache/
@@ -293,25 +345,24 @@ if [ "$BASH" ]; then
     fi
 fi
 mesg n || true
-menu
+uwu
 EOF
 
 cat >/etc/cron.d/xp_all <<EOF
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-2 0 * * * root /usr/bin/xp
+0 1 * * * root /usr/sbin/xp
 EOF
 
 chmod 644 /root/.profile
 
 cat >/etc/cron.d/daily_reboot <<EOF
-SHELL=/bin/sh
+SHELL=/sbin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 0 5 * * * root /sbin/reboot
 EOF
 
-echo "*/1 * * * * root echo -n > /var/log/nginx/access.log" >/etc/cron.d/log.nginx
-echo "*/1 * * * * root echo -n > /var/log/xray/access.log" >>/etc/cron.d/log.xray
+echo "*/3 * * * * root /usr/sbin/clearlog" >/etc/cron.d/clearlog_all
 service cron restart
 cat >/home/daily_reboot <<EOF
 5
@@ -391,9 +442,9 @@ account default
 host smtp.gmail.com
 port 587
 auth on
-user taibabihutan17@gmail.com
-from taibabihutan17@gmail.com
-password romanisti
+user dikitubis9@gmail.com
+from dikitubis9@gmail.com
+password main12345
 logfile ~/.msmtp.log
 EOF
 
@@ -418,10 +469,10 @@ touch /root/.install.log
 cat >/root/tmp <<-END
 #!/bin/bash
 #vps
-### Geostoretunnel $TANGGAL $MYIP
+### mainHdytstoreVPN $TANGGAL $MYIP
 END
 ####
-GEOPROJECT() {
+mainHDYTPROJECT() {
     data=($(cat /root/tmp | grep -E "^### " | awk '{print $2}'))
     for user in "${data[@]}"; do
         exp=($(grep -E "^### $user" "/root/tmp" | awk '{print $3}'))
@@ -495,8 +546,7 @@ function finish(){
 "
     curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
     cp /etc/openvpn/*.ovpn /var/www/html/
-    # sed -i "s/xxx/${domain}/g" /var/www/html/index.html
-    sed -i "s/xxx/${domain}/g" /etc/haproxy/haproxy.cfg
+    # > sed -i "s/xxx/${domain}/g" /var/www/html/index.html
     sed -i "s/xxx/${MYIP}/g" /etc/squid/squid.conf
     chown -R www-data:www-data /etc/msmtprc
 
@@ -534,8 +584,9 @@ function finish(){
     echo "    │                                                     │"
     echo "    │      >>> Server Information & Other Features        │"
     echo "    │   - Timezone                : Asia/Jakarta (GMT +7) │"
-    echo "    │   - Autoreboot On           : $AUTOREB:00 $TIME_DATE GMT +7        │"
-    echo "    │   - Auto Delete Expired Account                     │"
+    echo "    │   - Autoreboot On    : $AUTOREB:00 $TIME_DATE GMT +7│"
+    echo "    │   - Auto Delete Expired Account  : per 23:30        │"
+    echo "    │   - FAuto Clear Log.   : Per 30 Menit               │"
     echo "    │   - Fully automatic script                          │"
     echo "    │   - VPS settings                                    │"
     echo "    │   - Admin Control                                   │"
@@ -555,7 +606,7 @@ echo ""
 
 }
 cd /tmp
-GEOPROJECT
+mainHDYTPROJECT
 first_setup
 dir_xray
 add_domain

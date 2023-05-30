@@ -3,13 +3,16 @@ red='\e[1;31m'
 green='\e[0;32m'
 NC='\e[0m'
 ns_domain_cloudflare1() {
-DOMAIN=aixxy.software
-sub=$(</dev/urandom tr -dc a-z0-9 | head -c4)
+apt install jq curl -y
+clear
+
+read -rp "Sub Domain (Contoh: rizki99): " -e sub
+DOMAIN=aixxy.cloud
 echo $sub > /root/cfku
-SUB_DOMAIN=${sub}.aixxy.software
+SUB_DOMAIN=${sub}.aixxy.cloud
 CF_ID=zkendev@gmail.com
 CF_KEY=c0edd90f0a64eea5009e21ebd3189c1c9eccc
-echo "slowdns.app" > /root/domain
+echo "aixxy.cloud" > /root/domain
 echo $SUB_DOMAIN > /root/domain
 
 set -euo pipefail
@@ -54,7 +57,7 @@ cp /root/domain /etc/xray/domain
 #chmod +x /usr/bin/nza
 #chmod +x /usr/bin/wcc
 
-echo -e "Done Record Domain For VPS"
+echo -e "Done Record Domain= ${SUB_DOMAIN} For VPS"
 sleep 1
 }
 ns_domain_cloudflare1

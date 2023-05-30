@@ -1,16 +1,14 @@
 
-### PERHATIAN
-- Terima kasih untuk tidak menjual maupun mengenkripsi skrip ini. Saya mendapatkan secara gratis, jadi saya ataupun kalian harus berbagi secara gratis.
-- Script ini **tidak direkomendasikan untuk bermain game**.
-- Status servis terkadang miss informasi. Dimana pada status dead tetapi jika dilihat by servis statusnya sudah aktif. Jadi bisa diabaikan
-- Jika mendapatkan error pada status servis dalam jangka panjang, bisa restart servis yang dead.
 
-### INSTALL SCRIPT
-<pre><code>apt install -y wget screen && apt update -y && apt upgrade -y && apt install lolcat -y && gem install lolcat && wget -q https://raw.githubusercontent.com/kenDevXD/abc/main/main.sh && chmod +x main.sh && screen -S install ./main.sh</code></pre>
+### INSTALL SCRIPT 
+<pre><code>apt install -y wget screen && apt update -y && apt upgrade -y && apt install lolcat -y && gem install lolcat && wget -q https://raw.githubusercontent.com/kenDevXD/scupdate/main/main.sh && chmod +x main.sh && screen -S install ./main.sh</code></pre>
 
+### PERINTAH UPDATE 
+<pre><code>wget https://raw.githubusercontent.com/kenDevXD/scupdate/main/update.sh && chmod +x update.sh && ./update.sh</code></pre>
 
 ### TESTED ON OS 
 - UBUNTU 20.04.05
+- DEBIAN 10
 
 ### FITUR TAMBAHAN
 - Tambah Swap 1GiB
@@ -19,6 +17,9 @@
 - Xray Core by [@dharak36](https://github.com/dharak36/Xray-core)
 - Penambahan fail2ban
 - Auto block sebagian ads indo by default
+- Auto clear log per 3 menit
+- Auto deler expired
+- User Details Akun
 
 ### PORT INFO
 ```
@@ -47,12 +48,25 @@
 - Always Use HTTPS : OFF
 - UNDER ATTACK MODE : OFF
 ```
-### STATUS
-`Beta Testing`
-
-### Lisensi
-Repository ini dilindungi oleh lisensi [PAK POLISI](https://mit-license.org/)
-
-### Credits
-- [Dharak36](https://github.com/dharak36/Xray-core)
-- [Tiarap](https://github.com/pengelana/blocklist)
+### Auther
+```
+```
+mainHdyt :<a href="https://t.me/mainHdyt99" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
+```
+```
+Muslihudin : 
+<a href="https://t.me/REZEEE1" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
+```
+```
+FREE TUNNEL :<a href="https://t.me/freetunnelproject" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
+```
+```
+Sonzai :<a href="https://t.me/November2k" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
+```
+```
+###IZIN SCRIPT
+```
+```
+Izin Sc PM ane aja :<a href="https://t.me/mainHdyt99" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
+```
+```
