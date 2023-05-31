@@ -1,4 +1,6 @@
 #!/bin/bash
+
+### Color
 Green="\e[92;1m"
 RED="\033[31m"
 YELLOW="\033[33m"
@@ -12,48 +14,23 @@ GRAY="\e[1;30m"
 NC='\e[0m'
 red='\e[1;31m'
 green='\e[0;32m'
-ipsaya=$(wget -qO- ipinfo.io/ip)
-data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
-date_list=$(date +"%Y-%m-%d" -d "$data_server")
-data_ip="https://raw.githubusercontent.com/kenDevXD/izinsc/main/ip"
-checking_sc() {
-  useexp=$(wget -qO- $data_ip | grep $ipsaya | awk '{print $3}')
-  if [[ $date_list < $useexp ]]; then
-    echo -ne
-  else
-    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
-    echo -e "\033[42m          404 NOT FOUND AUTOSCRIPT          \033[0m"
-    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
-    echo -e ""
-    echo -e "            ${RED}PERMISSION DENIED !${NC}"
-    echo -e "   \033[0;33mYour VPS${NC} $ipsaya \033[0;33mHas been Banned${NC}"
-    echo -e "     \033[0;33mBuy access permissions for scripts${NC}"
-    echo -e "             \033[0;33mContact Admin :${NC}"
-    echo -e "      \033[0;36mTelegram${NC} t.me/RizkiHdyt99"
-    echo -e "      ${GREEN}WhatsApp${NC} wa.me/6285871027196"
-    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
-    exit
-  fi
-}
-checking_sc
-
 
 ### System Information
 TANGGAL=$(date '+%Y-%m-%d')
 TIMES="10"
 NAMES=$(whoami)
 IMP="wget -q -O"    
-CHATID="1316596937"
+CHATID="1687681034"
 LOCAL_DATE="/usr/bin/"
 MYIP=$(wget -qO- ipinfo.io/ip)
 ISP=$(wget -qO- ipinfo.io/org)
 CITY=$(curl -s ipinfo.io/city)
 TIME=$(date +'%Y-%m-%d %H:%M:%S')
 RAMMS=$(free -m | awk 'NR==2 {print $2}')
-KEY="6003347945:AAHv1Ti4HQliYwpYm8sbKrriDkSMqqJLUqE"
+KEY="5892284613:AAGOTY9ePR8KcSIgWPFFftbVuVNelb4fOuc"
 URL="https://api.telegram.org/bot$KEY/sendMessage"
-REPO="https://raw.githubusercontent.com/kenDevXD/scupdate/main/"
-CDNF="https://raw.githubusercontent.com/kenDevXD/scupdate/main"
+REPO="https://raw.githubusercontent.com/kenDevXD/scupdate/jurig/"
+CDNF="https://raw.githubusercontent.com/kenDevXD/scupdate/jurig"
 APT="apt-get -y install "
 domain=$(cat /root/domain)
 start=$(date +%s)
@@ -115,18 +92,18 @@ function base_package() {
     sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null 2>&1
     sysctl -w net.ipv6.conf.default.disable_ipv6=1  >/dev/null 2>&1
     sudo apt install software-properties-common -y
+    sudo add-apt-repository ppa:vbernat/haproxy-2.7 -y
     sudo apt update && apt upgrade -y
     # linux-tools-common util-linux  \
     sudo apt install squid nginx zip pwgen openssl netcat bash-completion  \
     curl socat xz-utils wget apt-transport-https dnsutils socat chrony \
+    tar wget curl ruby zip unzip p7zip-full python3-pip haproxy libc6  gnupg gnupg2 gnupg1 \
     msmtp-mta ca-certificates bsd-mailx iptables iptables-persistent netfilter-persistent \
     net-tools  jq openvpn easy-rsa python3-certbot-nginx p7zip-full tuned fail2ban -y
     apt-get clean all; sudo apt-get autoremove -y
     apt-get install lolcat -y
     apt-get install vnstat -y
     apt-get install cron -y
-    apt-get install lsof -y
-    apt-get install curl -y
     gem install lolcat
     print_ok "Berhasil memasang paket yang dibutuhkan"
 }
@@ -140,7 +117,7 @@ function dir_xray() {
     mkdir -p /root/.install.log
     mkdir -p /var/log/xray/
     mkdir -p /var/www/html/
-    mkdir -p /etc/mainhdyt/
+    mkdir -p /etc/rizkihdyt/
     # chmod +x /var/log/xray
     touch /var/log/xray/{access.log,error.log}
     chmod 777 /var/log/xray/*.log
@@ -159,7 +136,7 @@ function add_domain() {
     echo -e "${red}    ♦️${NC} ${green} CUSTOM SETUP DOMAIN VPS     ${NC}"
     echo -e "${red}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
     echo "1. Use Domain From Script / Gunakan Domain Dari Script"
-    echo "2. Choose Your Own Domain / Pilih Domain Sendiri"
+    echo "2. Choose Your Own Domain / Pilih Domain Sendiri (recommended)"
     echo -e "${red}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
     read -rp "Choose Your Domain Installation : " dom 
 
@@ -285,8 +262,8 @@ function pasang_rclone() {
 function download_config(){
     print_install "Memasang konfigurasi paket konfigurasi"
     wget -O /etc/haproxy/haproxy.cfg "${REPO}config/haproxy.cfg" >/dev/null 2>&1
-    wget -O /etc/nginx/conf.d/protokol.conf "${REPO}config/geovpn.conf" >/dev/null 2>&1
-    sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/protokol.conf
+    wget -O /etc/nginx/conf.d/geostore.conf "${REPO}config/geovpn.conf" >/dev/null 2>&1
+    sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/geostore.conf
     wget -O /etc/nginx/nginx.conf "${REPO}config/nginx.conf" >/dev/null 2>&1
     # > curl "${REPO}caddy/install.sh" | bash 
     wget -q -O /etc/squid/squid.conf "${REPO}config/squid.conf" >/dev/null 2>&1
@@ -296,27 +273,6 @@ function download_config(){
     echo "* - nofile 65535" >> /etc/security/limits.conf
     mkdir -p /etc/sysconfig/
     echo "ulimit -n 65535" >> /etc/sysconfig/squid
-
-    # > core Haproxy
-    wget -O /usr/sbin/ftvpn "${REPO}config/ftvpn" >/dev/null 2>&1
-    mkdir /etc/haproxy
-    chmod +x /usr/sbin/ftvpn
-    cat >/lib/systemd/system/haproxy.service <<EOF
-[Unit]
-Description=FighterTunnel Load Balancer
-Documentation=https://github.com/FighterTunnel
-After=network-online.target rsyslog.service
-
-[Service]
-ExecStart=/usr/sbin/ftvpn -Ws -f /etc/haproxy/haproxy.cfg -p 18173 
-Restart=on-failure
-RestartPreventExitStatus=23
-LimitNPROC=10000
-LimitNOFILE=1000000
-
-[Install]
-WantedBy=multi-user.target
-EOF
 
     # > Add Dropbear
     apt install dropbear -y
@@ -343,21 +299,15 @@ mesg n || true
 uwu
 EOF
 
-cat >/etc/cron.d/xp_all <<EOF
-SHELL=/bin/sh
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-0 1 * * * root /usr/sbin/xp
-EOF
-
-chmod 644 /root/.profile
-
 cat >/etc/cron.d/daily_reboot <<EOF
 SHELL=/sbin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 0 5 * * * root /sbin/reboot
 EOF
 
-echo "*/3 * * * * root /usr/sbin/clearlog" >/etc/cron.d/clearlog_all
+echo "*/30 0 * * * root /usr/sbin/xp" >/etc/cron.d/xp_all
+echo "*/10 * * * * root /usr/sbin/clearlog" >/etc/cron.d/clearlog_all
+echo "*/10 * * * * root service cron restart" >/etc/cron.d/restart_cron
 service cron restart
 cat >/home/daily_reboot <<EOF
 5
@@ -439,7 +389,7 @@ port 587
 auth on
 user dikitubis9@gmail.com
 from dikitubis9@gmail.com
-password main12345
+password rizki12345
 logfile ~/.msmtp.log
 EOF
 
@@ -464,7 +414,7 @@ touch /root/.install.log
 cat >/root/tmp <<-END
 #!/bin/bash
 #vps
-### mainHdytstoreVPN $TANGGAL $MYIP
+### RizkiHdytstoreVPN $TANGGAL $MYIP
 END
 ####
 RIZKIHDYTPROJECT() {

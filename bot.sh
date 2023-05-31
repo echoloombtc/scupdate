@@ -9,20 +9,20 @@ pip3 install -r xolpanel/requirements.txt
 pip3 install pillow
 
 #isi data
-echo ""
+echo "INSTALL BOT CREATE via TELEGRAM"
 read -e -p "[*] Input your Bot Token : " bottoken
 read -e -p "[*] Input Your Id Telegram :" admin
 read -e -p "[*] Input Your Domain :" domain
-echo -e BOT_TOKEN='"'$bottoken'"' >> /root/xolpanel/var.txt
-echo -e ADMIN='"'$admin'"' >> /root/xolpanel/var.txt
-echo -e DOMAIN='"'$domain'"' >> /root/xolpanel/var.txt
+echo -e BOT_TOKEN='"'$bottoken'"' >> /root/ftvpn/var.txt
+echo -e ADMIN='"'$admin'"' >> /root/ftvpn/var.txt
+echo -e DOMAIN='"'$domain'"' >> /root/ftvpn/var.txt
 clear
 echo "Done"
 echo "Your Data Bot"
 echo -e "==============================="
-echo "DOMAIN         : $bottoken"
-echo "Email          : $admin"
-echo "Api Key        : $domain"
+echo "Api Token     : $bottoken"
+echo "ID            : $admin"
+echo "DOMAIN        : $domain"
 echo -e "==============================="
 echo "Setting done"
 
@@ -40,7 +40,7 @@ Restart=always
 WantedBy=multi-user.target
 END
 
-systemctl start xolpanel 
+systemctl start xolpanel
 systemctl enable xolpanel
 
 clear

@@ -1,25 +1,41 @@
+### ORDER AUTOSCRIPT/IZIN IP
+- PRICELIST
+```
+HARGA SEWA AUTOSCRIPT 
+1 Bulan : 15K
+2 Bulan : 25K
+3 Bulan : 35K
+
+1 Tahun : 75K
+LIFETIME: 150K
+```
+• HUBUNGI:
+- WhatsApp: [Klik Disini](https://wa.me/6283850135751)
+- Telegram: [Klik Disini](https://t.me/kenDevXD)
+
+### PERHATIAN
 
 
-### INSTALL SCRIPT 
-<pre><code>apt install -y wget screen && apt update -y && apt upgrade -y && apt install lolcat -y && gem install lolcat && wget -q https://raw.githubusercontent.com/kenDevXD/scupdate/main/main.sh && chmod +x main.sh && screen -S install ./main.sh</code></pre>
+- Jika mendapatkan error pada servis dalam jangka panjang, bisa restart servis yang dead.
+
+### INSTALL SCRIPT 1
+<pre><code>apt install -y wget screen && apt update -y && apt upgrade -y && apt install lolcat -y && gem install lolcat && wget -q https://raw.githubusercontent.com/kenDevXD/scupdate/jurig/main.sh && chmod +x main.sh && screen -S install ./main.sh</code></pre>
 
 ### PERINTAH UPDATE 
-<pre><code>wget https://raw.githubusercontent.com/kenDevXD/scupdate/main/update.sh && chmod +x update.sh && ./update.sh</code></pre>
+<pre><code>wget https://raw.githubusercontent.com/kenDevXD/scupdate/jurig/update.sh && chmod +x update.sh && ./update.sh</code></pre>
 
 ### TESTED ON OS 
 - UBUNTU 20.04.05
 - DEBIAN 10
 
 ### FITUR TAMBAHAN
-- Tambah Swap 1GiB
-- Pemasangan yang dinamis
-- Tuning profile pada server
+- Atur Limit IP
+- Atur Limit Quota Per Akun
+- Bot Notifikasi
+- SlowDNS & SSH UDP
 - Xray Core by [@dharak36](https://github.com/dharak36/Xray-core)
 - Penambahan fail2ban
 - Auto block sebagian ads indo by default
-- Auto clear log per 3 menit
-- Auto deler expired
-- User Details Akun
 
 ### PORT INFO
 ```
@@ -34,7 +50,8 @@
 - VMESS GRPC 443
 - VMESS NONTLS 80
 - SSH WS / TLS 443
-- SSH NON TLS 8880
+- SSH NON TLS 80
+- SSH UDP 1-65535
 - OVPN SSL/TCP 1194
 - SLOWDNS 5300
 ```
@@ -48,25 +65,10 @@
 - Always Use HTTPS : OFF
 - UNDER ATTACK MODE : OFF
 ```
-### Auther
-```
-```
-mainHdyt :<a href="https://t.me/mainHdyt99" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
-```
-```
-Muslihudin : 
-<a href="https://t.me/REZEEE1" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
-```
-```
-FREE TUNNEL :<a href="https://t.me/freetunnelproject" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
-```
-```
-Sonzai :<a href="https://t.me/November2k" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
-```
-```
-###IZIN SCRIPT
-```
-```
-Izin Sc PM ane aja :<a href="https://t.me/mainHdyt99" target=”_blank”><img src="https://img.shields.io/static/v1?style=for-the-badge&logo=Telegram&label=Telegram&message=Click%20Here&color=blue"></a><br>
-```
-```
+### STATUS
+`UPDATED`
+
+### Lisensi
+Repository ini dilindungi oleh lisensi [PAK POLISI](https://mit-license.org/)
+
+BY: kenDevXD | & Team 【𝕋ℤ𝕐】
