@@ -1,21 +1,3 @@
-### ORDER AUTOSCRIPT/IZIN IP
-- PRICELIST
-```
-HARGA SEWA AUTOSCRIPT 
-1 Bulan : 15K
-2 Bulan : 25K
-3 Bulan : 35K
-
-1 Tahun : 75K
-LIFETIME: 150K
-```
-• HUBUNGI:
-- WhatsApp: [Klik Disini](https://wa.me/6283850135751)
-- Telegram: [Klik Disini](https://t.me/kenDevXD)
-
-### PERHATIAN
-
-
 - Jika mendapatkan error pada servis dalam jangka panjang, bisa restart servis yang dead.
 
 ### INSTALL SCRIPT 1
@@ -64,11 +46,10 @@ LIFETIME: 150K
 - WEBSOCKET : ON
 - Always Use HTTPS : OFF
 - UNDER ATTACK MODE : OFF
-```
-### STATUS
+`### STATUS
 `UPDATED`
 
 ### Lisensi
 Repository ini dilindungi oleh lisensi [PAK POLISI](https://mit-license.org/)
 
-BY: kenDevXD | & Team 【𝕋ℤ𝕐】
+BY: AIXXY7
