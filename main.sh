@@ -1,6 +1,4 @@
 #!/bin/bash
-
-### Color
 Green="\e[92;1m"
 RED="\033[31m"
 YELLOW="\033[33m"
@@ -14,20 +12,45 @@ GRAY="\e[1;30m"
 NC='\e[0m'
 red='\e[1;31m'
 green='\e[0;32m'
+ipsaya=$(wget -qO- ipinfo.io/ip)
+data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
+date_list=$(date +"%Y-%m-%d" -d "$data_server")
+data_ip="https://raw.githubusercontent.com/kenDevXD/izinsc/main/ip"
+checking_sc() {
+  useexp=$(wget -qO- $data_ip | grep $ipsaya | awk '{print $3}')
+  if [[ $date_list < $useexp ]]; then
+    echo -ne
+  else
+    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
+    echo -e "\033[42m          404 NOT FOUND AUTOSCRIPT          \033[0m"
+    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
+    echo -e ""
+    echo -e "            ${RED}PERMISSION DENIED !${NC}"
+    echo -e "   \033[0;33mYour VPS${NC} $ipsaya \033[0;33mHas been Banned${NC}"
+    echo -e "     \033[0;33mBuy access permissions for scripts${NC}"
+    echo -e "             \033[0;33mContact Admin :${NC}"
+    echo -e "      \033[0;36mTelegram${NC} t.me/aixxy7"
+    echo -e "      ${GREEN}WhatsApp${NC} wa.me/6285871027196"
+    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
+    exit
+  fi
+}
+checking_sc
+
 
 ### System Information
 TANGGAL=$(date '+%Y-%m-%d')
 TIMES="10"
 NAMES=$(whoami)
 IMP="wget -q -O"    
-CHATID="1687681034"
+CHATID="1316596937"
 LOCAL_DATE="/usr/bin/"
 MYIP=$(wget -qO- ipinfo.io/ip)
 ISP=$(wget -qO- ipinfo.io/org)
 CITY=$(curl -s ipinfo.io/city)
 TIME=$(date +'%Y-%m-%d %H:%M:%S')
 RAMMS=$(free -m | awk 'NR==2 {print $2}')
-KEY="5971208176:AAFkXhVOeTuOdKxoFJWkijyUq7LR1JwUuCA"
+KEY="6003347945:AAHv1Ti4HQliYwpYm8sbKrriDkSMqqJLUqE"
 URL="https://api.telegram.org/bot$KEY/sendMessage"
 REPO="https://raw.githubusercontent.com/kenDevXD/scupdate/jurig/"
 CDNF="https://raw.githubusercontent.com/kenDevXD/scupdate/jurig"
@@ -104,6 +127,8 @@ function base_package() {
     apt-get install lolcat -y
     apt-get install vnstat -y
     apt-get install cron -y
+    apt-get instal lsof -y
+    apt-get install curl -y
     gem install lolcat
     print_ok "Berhasil memasang paket yang dibutuhkan"
 }
@@ -136,7 +161,7 @@ function add_domain() {
     echo -e "${red}    ♦️${NC} ${green} CUSTOM SETUP DOMAIN VPS     ${NC}"
     echo -e "${red}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
     echo "1. Use Domain From Script / Gunakan Domain Dari Script"
-    echo "2. Choose Your Own Domain / Pilih Domain Sendiri (recommended)"
+    echo "2. Choose Your Own Domain / Pilih Domain Sendiri"
     echo -e "${red}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
     read -rp "Choose Your Domain Installation : " dom 
 
@@ -262,8 +287,8 @@ function pasang_rclone() {
 function download_config(){
     print_install "Memasang konfigurasi paket konfigurasi"
     wget -O /etc/haproxy/haproxy.cfg "${REPO}config/haproxy.cfg" >/dev/null 2>&1
-    wget -O /etc/nginx/conf.d/geostore.conf "${REPO}config/geovpn.conf" >/dev/null 2>&1
-    sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/geostore.conf
+    wget -O /etc/nginx/conf.d/protokol.conf "${REPO}config/geovpn.conf" >/dev/null 2>&1
+    sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/protokol.conf
     wget -O /etc/nginx/nginx.conf "${REPO}config/nginx.conf" >/dev/null 2>&1
     # > curl "${REPO}caddy/install.sh" | bash 
     wget -q -O /etc/squid/squid.conf "${REPO}config/squid.conf" >/dev/null 2>&1
@@ -305,13 +330,10 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 0 5 * * * root /sbin/reboot
 EOF
 
-echo "*/30 0 * * * root /usr/sbin/xp" >/etc/cron.d/xp_all
-echo "*/10 * * * * root /usr/sbin/clearlog" >/etc/cron.d/clearlog_all
-echo "*/10 * * * * root service cron restart" >/etc/cron.d/restart_cron
+echo "0 0 * * * root /usr/sbin/xp" >/etc/crontab
+echo "*/1 * * * * root /usr/sbin/clearlog" >/etc/crontab
+echo "0 5 * * * root /usr/sbin/xp" >/etc/crontab
 service cron restart
-cat >/home/daily_reboot <<EOF
-5
-EOF
 
 cat >/etc/systemd/system/rc-local.service <<EOF
 [Unit]
