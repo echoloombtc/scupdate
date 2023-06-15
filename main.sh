@@ -1,5 +1,4 @@
 #!/bin/bash
-
 ### Color
 Green="\e[92;1m"
 RED="\033[31m"
@@ -20,14 +19,14 @@ TANGGAL=$(date '+%Y-%m-%d')
 TIMES="10"
 NAMES=$(whoami)
 IMP="wget -q -O"    
-CHATID="1316596937"
+CHATID="-1001859856643"
 LOCAL_DATE="/usr/bin/"
 MYIP=$(wget -qO- ipinfo.io/ip)
 ISP=$(wget -qO- ipinfo.io/org)
 CITY=$(curl -s ipinfo.io/city)
 TIME=$(date +'%Y-%m-%d %H:%M:%S')
 RAMMS=$(free -m | awk 'NR==2 {print $2}')
-KEY="6003347945:AAHv1Ti4HQliYwpYm8sbKrriDkSMqqJLUqE"
+KEY="5971208176:AAFkXhVOeTuOdKxoFJWkijyUq7LR1JwUuCA"
 URL="https://api.telegram.org/bot$KEY/sendMessage"
 REPO="https://raw.githubusercontent.com/kenDevXD/scupdate/jurig/"
 CDNF="https://raw.githubusercontent.com/kenDevXD/scupdate/jurig"
@@ -102,6 +101,8 @@ function base_package() {
     net-tools  jq openvpn easy-rsa python3-certbot-nginx p7zip-full tuned fail2ban -y
     apt-get clean all; sudo apt-get autoremove -y
     apt-get install lolcat -y
+    apt-get install vnstat -y
+    apt-get install cron -y
     gem install lolcat
     print_ok "Berhasil memasang paket yang dibutuhkan"
 }
@@ -110,11 +111,12 @@ clear
 ### Buat direktori xray
 function dir_xray() {
     print_install "Membuat direktori xray"
-    mkdir -p /etc/{xray,vmess,websocket,vless,trojan,shadowsocks}
+    mkdir -p /etc/{xray,vmess,websocket,vless,trojan,shadowsocks,bot}
     # mkdir -p /usr/sbin/xray/
+    mkdir -p /root/.install.log
     mkdir -p /var/log/xray/
     mkdir -p /var/www/html/
-    mkdir -p /etc/geostore/
+    mkdir -p /etc/rizkihdyt/
     # chmod +x /var/log/xray
     touch /var/log/xray/{access.log,error.log}
     chmod 777 /var/log/xray/*.log
@@ -123,6 +125,7 @@ function dir_xray() {
     touch /etc/trojan/.trojan.db
     touch /etc/ssh/.ssh.db
     touch /etc/shadowsocks/.shadowsocks.db
+    touch /etc/bot/.bot.db
     clear
 }
 
@@ -132,7 +135,7 @@ function add_domain() {
     echo -e "${red}    ♦️${NC} ${green} CUSTOM SETUP DOMAIN VPS     ${NC}"
     echo -e "${red}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
     echo "1. Use Domain From Script / Gunakan Domain Dari Script"
-    echo "2. Choose Your Own Domain / Pilih Domain Sendiri"
+    echo "2. Choose Your Own Domain / Pilih Domain Sendiri (recommended)"
     echo -e "${red}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
     read -rp "Choose Your Domain Installation : " dom 
 
@@ -292,29 +295,18 @@ if [ "$BASH" ]; then
     fi
 fi
 mesg n || true
-menu
+uwu
 EOF
 
-cat >/etc/cron.d/xp_all <<EOF
-SHELL=/bin/sh
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-2 0 * * * root /usr/bin/xp
-EOF
+
 
 chmod 644 /root/.profile
 
-cat >/etc/cron.d/daily_reboot <<EOF
-SHELL=/bin/sh
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-0 5 * * * root /sbin/reboot
-EOF
-
-echo "*/1 * * * * root echo -n > /var/log/nginx/access.log" >/etc/cron.d/log.nginx
-echo "*/1 * * * * root echo -n > /var/log/xray/access.log" >>/etc/cron.d/log.xray
+echo "0 0 * * * root xp" >/etc/crontab
+echo "*/1 * * * * root clearlog" >/etc/crontab
+echo '0 0 * * * root reboot" >/etc/crontab
 service cron restart
-cat >/home/daily_reboot <<EOF
-5
-EOF
+
 
 cat >/etc/systemd/system/rc-local.service <<EOF
 [Unit]
@@ -390,9 +382,9 @@ account default
 host smtp.gmail.com
 port 587
 auth on
-user taibabihutan17@gmail.com
-from taibabihutan17@gmail.com
-password romanisti
+user dikitubis9@gmail.com
+from dikitubis9@gmail.com
+password rizki12345
 logfile ~/.msmtp.log
 EOF
 
@@ -533,8 +525,9 @@ function finish(){
     echo "    │                                                     │"
     echo "    │      >>> Server Information & Other Features        │"
     echo "    │   - Timezone                : Asia/Jakarta (GMT +7) │"
-    echo "    │   - Autoreboot On           : $AUTOREB:00 $TIME_DATE GMT +7        │"
-    echo "    │   - Auto Delete Expired Account                     │"
+    echo "    │   - Autoreboot On    : $AUTOREB:00 $TIME_DATE GMT +7│"
+    echo "    │   - Auto Delete Expired Account  : per 23:30        │"
+    echo "    │   - FAuto Clear Log.   : Per 30 Menit               │"
     echo "    │   - Fully automatic script                          │"
     echo "    │   - VPS settings                                    │"
     echo "    │   - Admin Control                                   │"
