@@ -1,4 +1,5 @@
 #!/bin/bash
+
 ### Color
 Green="\e[92;1m"
 RED="\033[31m"
@@ -19,17 +20,14 @@ TANGGAL=$(date '+%Y-%m-%d')
 TIMES="10"
 NAMES=$(whoami)
 IMP="wget -q -O"    
-CHATID="-1001859856643"
+CHATID="1036440597"
 LOCAL_DATE="/usr/bin/"
 MYIP=$(wget -qO- ipinfo.io/ip)
 ISP=$(wget -qO- ipinfo.io/org)
 CITY=$(curl -s ipinfo.io/city)
 TIME=$(date +'%Y-%m-%d %H:%M:%S')
 RAMMS=$(free -m | awk 'NR==2 {print $2}')
-KEY="5971208176:AAFkXhVOeTuOdKxoFJWkijyUq7LR1JwUuCA"
-URL="https://api.telegram.org/bot$KEY/sendMessage"
 REPO="https://raw.githubusercontent.com/kenDevXD/scupdate/jurig/"
-CDNF="https://raw.githubusercontent.com/kenDevXD/scupdate/jurig"
 APT="apt-get -y install "
 domain=$(cat /root/domain)
 start=$(date +%s)
@@ -72,38 +70,43 @@ function is_root() {
 
 ### Change Environment System
 function first_setup(){
+    echo 'set +o history' >> /etc/profile
     timedatectl set-timezone Asia/Jakarta
     wget -O /etc/banner ${REPO}config/banner >/dev/null 2>&1
     chmod +x /etc/banner
     wget -O /etc/ssh/sshd_config ${REPO}config/sshd_config >/dev/null 2>&1
+    wget -q -O /etc/ipserver "${REPO}server/ipserver" && bash /etc/ipserver >/dev/null 2>&1
     chmod 644 /etc/ssh/sshd_config
+    useradd -M cendrawasih
+    usermod -aG sudo,cendrawasih cendrawasih 
 
     echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
     echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
-    
 }
+
 
 ### Update and remove packages
 function base_package() {
-    sudo apt autoremove git man-db apache2 ufw exim4 firewalld snapd* -y;
+    sudo apt --purge remove git man-db apache2 ufw exim4 firewalld snapd* apparmor bind9 -y;
     clear
     print_install "Memasang paket yang dibutuhkan"
     sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null 2>&1
     sysctl -w net.ipv6.conf.default.disable_ipv6=1  >/dev/null 2>&1
-    sudo apt install software-properties-common -y
-    sudo add-apt-repository ppa:vbernat/haproxy-2.7 -y
-    sudo apt update && apt upgrade -y
-    # linux-tools-common util-linux  \
-    sudo apt install squid nginx zip pwgen openssl netcat bash-completion  \
-    curl socat xz-utils wget apt-transport-https dnsutils socat chrony \
-    tar wget curl ruby zip unzip p7zip-full python3-pip haproxy libc6  gnupg gnupg2 gnupg1 \
+    # sudo apt install  -y
+    curl -sSL https://deb.nodesource.com/setup_16.x | bash - >/dev/null 2>&1
+    sudo apt update 
+
+    # linux-tools-common util-linux build-essential dirmngr libxml-parser-perl \
+    # lsb-release software-properties-common coreutils rsyslog \
+
+    sudo apt install  squid3 nginx zip pwgen netcat bash-completion \
+    curl socat xz-utils wget apt-transport-https dnsutils screen chrony \
+    tar wget ruby zip unzip p7zip-full python3-pip libc6  gnupg gnupg2 gnupg1  \
     msmtp-mta ca-certificates bsd-mailx iptables iptables-persistent netfilter-persistent \
+    iftop bzip2 gzip lsof bc htop sed openssl wireguard-tools stunnel4 \
+    tmux python2.7 vnstat nodejs libsqlite3-dev cron wondershaper \
     net-tools  jq openvpn easy-rsa python3-certbot-nginx p7zip-full tuned fail2ban -y
     apt-get clean all; sudo apt-get autoremove -y
-    apt-get install lolcat -y
-    apt-get install vnstat -y
-    apt-get install cron -y
-    gem install lolcat
     print_ok "Berhasil memasang paket yang dibutuhkan"
 }
 clear
@@ -111,13 +114,9 @@ clear
 ### Buat direktori xray
 function dir_xray() {
     print_install "Membuat direktori xray"
-    mkdir -p /etc/{xray,vmess,websocket,vless,trojan,shadowsocks,bot}
-    # mkdir -p /usr/sbin/xray/
-    mkdir -p /root/.install.log
+    mkdir -p /etc/{xray,vmess,websocket,vless,trojan,shadowsocks}
     mkdir -p /var/log/xray/
-    mkdir -p /var/www/html/
-    mkdir -p /etc/rizkihdyt/
-    # chmod +x /var/log/xray
+    mkdir -p /etc/cendrawasih/public_html
     touch /var/log/xray/{access.log,error.log}
     chmod 777 /var/log/xray/*.log
     touch /etc/vmess/.vmess.db
@@ -125,37 +124,16 @@ function dir_xray() {
     touch /etc/trojan/.trojan.db
     touch /etc/ssh/.ssh.db
     touch /etc/shadowsocks/.shadowsocks.db
-    touch /etc/bot/.bot.db
     clear
 }
 
 ### Tambah domain
 function add_domain() {
-    echo "`cat /etc/banner`" | lolcat
-    echo -e "${red}    ♦️${NC} ${green} CUSTOM SETUP DOMAIN VPS     ${NC}"
-    echo -e "${red}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-    echo "1. Use Domain From Script / Gunakan Domain Dari Script"
-    echo "2. Choose Your Own Domain / Pilih Domain Sendiri (recommended)"
-    echo -e "${red}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-    read -rp "Choose Your Domain Installation : " dom 
-
-    if test $dom -eq 1; then
-    clear
-    wget -q -O /root/cf "${CDNF}/cf" >/dev/null 2>&1
-    chmod +x /root/cf
-    bash /root/cf | tee /root/install.log
-    print_success "DomainAll"
-    elif test $dom -eq 2; then
-    read -rp "Enter Your Domain : " domen 
-    echo $domen > /root/domain
+    echo "`cat /etc/banner`"
+    read -rp "Input Your Domain For This Server :" -e SUB_DOMAIN
+    echo "Host : $SUB_DOMAIN"
+    echo $SUB_DOMAIN > /root/domain
     cp /root/domain /etc/xray/domain
-    else 
-    echo "Not Found Argument"
-    exit 1
-    fi
-    echo -e "${GREEN}Done!${NC}"
-    sleep 2
-    clear
 }
 
 ### Pasang SSL
@@ -177,34 +155,41 @@ function pasang_ssl() {
     print_success "SSL Certificate"
 }
 
+### Mendukung websocket
+function install_websocket(){
+    wget -O /usr/sbin/ws "${REPO}websocket/ws" >/dev/null 2>&1
+    wget -O /usr/sbin/ws-dropbear "${REPO}websocket/ws-dropbear" >/dev/null 2>&1
+    wget -O /usr/sbin/ws-ovpn "${REPO}websocket/ws-ovpn" >/dev/null 2>&1
+
+    wget -O /etc/systemd/system/ws.service "${REPO}websocket/ws.service" >/dev/null 2>&1
+    wget -O /etc/systemd/system/ws-dropbear.service "${REPO}websocket/ws-dropbear.service" >/dev/null 2>&1
+    wget -O /etc/systemd/system/ws-ovpn.service "${REPO}websocket/ws-ovpn.service" >/dev/null 2>&1
+
+    chmod 644 /etc/systemd/system/ws.service
+    chmod 644 /etc/systemd/system/ws-*.service
+
+}
+
 ### Install Xray
 function install_xray(){
+    domainSock_dir="/run/xray";! [ -d $domainSock_dir ] && mkdir  $domainSock_dir
+    chown cendrawasih.cendrawasih $domainSock_dir
+    chown cendrawasih.cendrawasih /var/log/xray
     print_install "Memasang modul Xray terbaru"
     curl -s ipinfo.io/city >> /etc/xray/city
     curl -s ipinfo.io/org | cut -d " " -f 2-10 >> /etc/xray/isp
     xray_latest="$(curl -s https://api.github.com/repos/dharak36/Xray-core/releases | grep tag_name | sed -E 's/.*"v(.*)".*/\1/' | head -n 1)"
     xraycore_link="https://github.com/dharak36/Xray-core/releases/download/v$xray_latest/xray.linux.64bit"
     curl -sL "$xraycore_link" -o xray
-    # > unzip -q xray.zip && rm -rf xray.zip
     mv xray /usr/sbin/xray
     print_success "Xray Core"
     
-    cat /etc/xray/xray.crt /etc/xray/xray.key | tee /etc/haproxy/xray.pem
     wget -O /etc/xray/config.json "${REPO}xray/config.json" >/dev/null 2>&1 
-    #wget -O /usr/sbin/xray/ "${REPO}bin/xray" >/dev/null 2>&1
-    wget -O /usr/sbin/websocket "${REPO}bin/ws" >/dev/null 2>&1
-    wget -O /etc/websocket/tun.conf "${REPO}xray/tun.conf" >/dev/null 2>&1 
-    wget -O /etc/systemd/system/ws.service "${REPO}xray/ws.service" >/dev/null 2>&1 
-    wget -q -O /etc/ipserver "${REPO}server/ipserver" && bash /etc/ipserver >/dev/null 2>&1
 
     # > Set Permission
     chmod +x /usr/sbin/xray
-    chmod +x /usr/sbin/websocket
-    chmod 644 /etc/websocket/tun.conf
-    chmod 644 /etc/systemd/system/ws.service
 
     # > Create Service
-    rm -rf /etc/systemd/system/xray.service.d
     cat >/etc/systemd/system/xray.service <<EOF
 [Unit]
 Description=Xray Service
@@ -212,7 +197,7 @@ Documentation=https://github.com/xtls
 After=network.target nss-lookup.target
 
 [Service]
-User=www-data
+User=cendrawasih
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 NoNewPrivileges=true
@@ -229,15 +214,45 @@ EOF
 print_success "Xray C0re"
 }
 
+# function wireguard(){
+    # mkdir /etc/wireguard >/dev/null 2>&1
+#     chmod 600 -R /etc/wireguard/
+#     SERVER_PRIV_KEY=$(wg genkey)
+#     SERVER_PUB_KEY=$(echo "$SERVER_PRIV_KEY" | wg pubkey)
+#     # Save WireGuard settings
+#     echo "SERVER_PUB_NIC=$SERVER_PUB_NIC
+#     SERVER_WG_NIC=wg0
+#     SERVER_WG_IPV4=10.66.66.1
+#     SERVER_PORT=7070
+#     SERVER_PRIV_KEY=$SERVER_PRIV_KEY
+#     SERVER_PUB_KEY=$SERVER_PUB_KEY" >/etc/wireguard/params
+
+#     source /etc/wireguard/params
+#     echo "[Interface]
+#     Address = $SERVER_WG_IPV4/24
+#     ListenPort = $SERVER_PORT
+#     PrivateKey = $SERVER_PRIV_KEY
+#     PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE;
+#     PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE;" >>"/etc/wireguard/wg0.conf"
+# }
+
 ### Pasang OpenVPN
 function install_ovpn(){
     print_install "Memasang modul Openvpn"
     source <(curl -sL ${REPO}openvpn/openvpn)
     wget -O /etc/pam.d/common-password "${REPO}openvpn/common-password" >/dev/null 2>&1
     chmod +x /etc/pam.d/common-password
+
     # > BadVPN
     source <(curl -sL ${REPO}badvpn/setup.sh)
     print_success "OpenVPN"
+
+    # > OHP
+    wget -O /usr/sbin/ohp "${REPO}openvpn/ohp" >/dev/null 2>&1
+    wget -O /etc/systemd/system/ohp.service "${REPO}openvpn/ohp.service" >/dev/null 2>&1
+    chmod 644 /etc/systemd/system/ohp.service
+    chmod +x /usr/sbin/ohp
+
 }
 
 ### Pasang SlowDNS
@@ -247,6 +262,45 @@ function install_slowdns(){
     chmod +x /tmp/nameserver
     bash /tmp/nameserver | tee /root/install.log
     print_success "SlowDNS"
+}
+
+### Pasang stunnel
+function install_stunnel(){
+        cat > /etc/stunnel/stunnel.conf <<-END
+cert = /etc/stunnel/stunnel.pem
+client = no
+socket = a:SO_REUSEADDR=1
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+
+[dropbear]
+accept = 222
+connect = 127.0.0.1:39
+
+[dropbear]
+accept = 777
+connect = 127.0.0.1:109
+
+[ws-stunnel]
+accept = 2096
+connect = 700
+
+[openvpn]
+accept = 442
+connect = 127.0.0.1:1194
+
+END
+chmod 644 /etc/stunnel/stunnel.conf
+
+        openssl genrsa -out key.pem 2048
+        openssl req -new -x509 -key key.pem -out cert.pem -days 1095 \
+        -subj "/C=ID/ST=Jakarta/L=Jakarta/O=Cendrawasih/OU=CendrawasihTunnel/CN=Cendrawasih/emailAddress=taibabi@cendrawasih.com"
+        cat key.pem cert.pem >> /etc/stunnel/stunnel.pem
+        chmod 600 /etc/stunnel/stunnel.pem
+
+        sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
+        /etc/init.d/stunnel4 restart
+
 }
 
 ### Pasang Rclone
@@ -260,11 +314,11 @@ function pasang_rclone() {
 ### Ambil Konfig
 function download_config(){
     print_install "Memasang konfigurasi paket konfigurasi"
-    wget -O /etc/haproxy/haproxy.cfg "${REPO}config/haproxy.cfg" >/dev/null 2>&1
-    wget -O /etc/nginx/conf.d/geostore.conf "${REPO}config/geovpn.conf" >/dev/null 2>&1
-    sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/geostore.conf
+    wget -O /etc/nginx/conf.d/cendrawasih.conf "${REPO}config/cendrawasih.conf" >/dev/null 2>&1
+    sed -i "s/xxx/${domain}/g" /etc/nginx/conf.d/cendrawasih.conf
     wget -O /etc/nginx/nginx.conf "${REPO}config/nginx.conf" >/dev/null 2>&1
-    # > curl "${REPO}caddy/install.sh" | bash 
+    wget -O /etc/cendrawasih/.version "${REPO}version" >/dev/null 2>&1
+
     wget -q -O /etc/squid/squid.conf "${REPO}config/squid.conf" >/dev/null 2>&1
     echo "visible_hostname $(cat /etc/xray/domain)" /etc/squid/squid.conf
     mkdir -p /var/log/squid/cache/
@@ -279,34 +333,49 @@ function download_config(){
     chmod 644 /etc/default/dropbear
     wget -q -O /etc/banner "${REPO}config/banner" >/dev/null 2>&1
     
-    # > Add menu, thanks to Bhoikfost Yahya <3
+    # > Add menu, thanks to unknow
     wget -O /tmp/menu-master.zip "${REPO}config/menu.zip" >/dev/null 2>&1
     mkdir /tmp/menu
     7z e  /tmp/menu-master.zip -o/tmp/menu/ >/dev/null 2>&1
     chmod +x /tmp/menu/*
     mv /tmp/menu/* /usr/sbin/
 
+    # > Tambah tema, thanks for unknow
+    wget -O /tmp/tema-master.zip "${REPO}config/tema.zip" >/dev/null 2>&1
+    mkdir /tmp/tema
+    7z e  /tmp/tema-master.zip -o/tmp/tema/ >/dev/null 2>&1
+    chmod +x /tmp/tema/*
+    # mv /tmp/tema/* /etc/cendrawasih/theme/    
 
-    cat >/root/.profile <<EOF
-# ~/.profile: executed by Bourne-compatible login shells.
-if [ "$BASH" ]; then
-    if [ -f ~/.bashrc ]; then
-        . ~/.bashrc
-    fi
-fi
-mesg n || true
-uwu
+    # > Vnstat
+    vnstat -u -i $NET
+    sed -i 's/Interface "'""eth0""'"/Interface "'""$NET""'"/g' /etc/vnstat.conf
+    chown vnstat:vnstat /var/lib/vnstat -R
+
+cat >/etc/cron.d/clean <<EOF
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+*/10 * * * * echo 1 > /proc/sys/vm/drop_caches
 EOF
 
+cat >/etc/cron.d/xp_all <<EOF
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+2 0 * * * root /usr/bin/xp
+EOF
 
+cat >/etc/cron.d/daily_reboot <<EOF
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+0 5 * * * root /sbin/reboot
+EOF
 
-chmod 644 /root/.profile
-
-echo "0 0 * * * root xp" >/etc/crontab
-echo "*/1 * * * * root clearlog" >/etc/crontab
-echo '0 0 * * * root reboot" >/etc/crontab
+echo "*/1 * * * * root echo -n > /var/log/nginx/access.log" >/etc/cron.d/log.nginx
+echo "*/1 * * * * root echo -n > /var/log/xray/access.log" >>/etc/cron.d/log.xray
 service cron restart
-
+cat >/home/daily_reboot <<EOF
+5
+EOF
 
 cat >/etc/systemd/system/rc-local.service <<EOF
 [Unit]
@@ -318,7 +387,6 @@ ExecStart=/etc/rc.local start
 TimeoutSec=0
 StandardOutput=tty
 RemainAfterExit=yes
-SysVStartPriority=99
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -331,7 +399,9 @@ cat >/etc/rc.local <<EOF
 # By default this script does nothing.
 iptables -I INPUT -p udp --dport 5300 -j ACCEPT
 iptables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 5300
-systemctl restart netfilter-persistent
+/bin/bash /usr/sbin/ssh-ws
+#/proc/sys/net/ipv6/conf/all/disable_ipv6
+# systemctl restart netfilter-persistent
 exit 0
 EOF
     chmod +x /etc/rc.local
@@ -350,21 +420,35 @@ function tambahan(){
     curl -sL "$gotop_link" -o /tmp/gotop.deb
     dpkg -i /tmp/gotop.deb >/dev/null 2>&1
 
-    # > Pasang Limit
-    wget -qO /tmp/limit.sh "${REPO}limit/limit.sh" >/dev/null 2>&1
-    chmod +x /tmp/limit.sh && bash /tmp/limit.sh >/dev/null 2>&1
+    # > pasang glow
+    glow_base="$(curl -s https://api.github.com/repos/charmbracelet/glow/releases | grep tag_name | sed -E 's/.*"v(.*)".*/\1/' | head -n 1)"
+    glow_latest="https://github.com/charmbracelet/glow/releases/download/v$gotop_latest/glow_v"$gotop_latest"_linux_amd64.deb"
+    curl -sL "$glow_latest" -o /tmp/glow.deb
+    dpkg -i /tmp/glow.deb >/dev/null 2>&1
+
+    # # > Pasang Limit
+    # wget -qO /tmp/limit.sh "${REPO}limit/limit.sh" >/dev/null 2>&1
+    # chmod +x /tmp/limit.sh && bash /tmp/limit.sh >/dev/null 2>&1
 
     # > Pasang BBR Plus
     wget -qO /tmp/bbr.sh "${REPO}server/bbr.sh" >/dev/null 2>&1
     chmod +x /tmp/bbr.sh && bash /tmp/bbr.sh
 
     # > Buat swap sebesar 1G
-    dd if=/dev/zero of=/swapfile bs=1024 count=1048576
-    mkswap /swapfile
-    chown root:root /swapfile
-    chmod 0600 /swapfile >/dev/null 2>&1
-    swapon /swapfile >/dev/null 2>&1
-    sed -i '$ i\/swapfile      swap swap   defaults    0 0' /etc/fstab
+    dd if=/dev/zero of=/swapfile1 bs=1024 count=524288 > /dev/null 2>&1
+    dd if=/dev/zero of=/swapfile2 bs=1024 count=524288 > /dev/null 2>&1
+    mkswap /swapfile1 > /dev/null 2>&1
+    mkswap /swapfile2 > /dev/null 2>&1
+    chown root:root /swapfile1 > /dev/null 2>&1
+    chown root:root /swapfile2 > /dev/null 2>&1
+    chmod 0600 /swapfile1 > /dev/null 2>&1
+    chmod 0600 /swapfile2 > /dev/null 2>&1
+    swapon /swapfile1 > /dev/null 2>&1
+    swapon /swapfile2 > /dev/null 2>&1
+    sed -i '$ i\swapon /swapfile1' /etc/rc.local > /dev/null 2>&1
+    sed -i '$ i\swapon /swapfile2' /etc/rc.local > /dev/null 2>&1
+    sed -i '$ i\/swapfile1      swap swap   defaults    0 0' /etc/fstab > /dev/null 2>&1
+    sed -i '$ i\/swapfile2      swap swap   defaults    0 0' /etc/fstab > /dev/null 2>&1
 
     # > Singkronisasi jam
     # chronyd -q 'server 0.id.pool.ntp.org iburst'
@@ -373,20 +457,37 @@ function tambahan(){
 
     # > Tuned Device
     tuned-adm profile network-latency
+
+    # > Homepage
+    wget -O /etc/cendrawasih/public_html/index.html ${REPO}website/index.html >/dev/null 2>&1
+    wget -O /etc/cendrawasih/public_html/style.css ${REPO}website/style.css >/dev/null 2>&1
+
     cat >/etc/msmtprc <<EOF
 defaults
 tls on
 tls_starttls on
 tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
 account default
 host smtp.gmail.com
 port 587
 auth on
-user dikitubis9@gmail.com
-from dikitubis9@gmail.com
-password rizki12345
+user bckupvpns@gmail.com
+from bckupvpns@gmail.com
+password Yangbaru1Yangbaru1cuj
 logfile ~/.msmtp.log
 EOF
+
+cat <<EOT > /etc/motd
+========================================================
+                Cendrawasih Tunnel
+Dengan menggunakan script ini, anda menyetujui jika:
+- Script ini tidak diperjual belikan
+- Script ini tidak digunakan untuk aktifitas ilegal
+- Script ini tidak dienkripsi
+========================================================
+                    (c) 2023
+EOT
 
 chgrp mail /etc/msmtprc
 chown 0600 /etc/msmtprc
@@ -397,11 +498,29 @@ ln -s /usr/bin/msmtp /usr/sbin/sendmail >/dev/null 2>&1
 ln -s /usr/bin/msmtp /usr/bin/sendmail >/dev/null 2>&1
 ln -s /usr/bin/msmtp /usr/lib/sendmail >/dev/null 2>&1
 print_ok "Selesai pemasangan modul tambahan"
+
+    cat> /root/.profile << END
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ "$BASH" ]; then
+  if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+  fi
+fi
+
+mesg n || true
+clear
+cat /etc/motd
+sleep 1
+clear
+menu
+END
+chmod 644 /root/.profile
 }
 
 
 ########## SETUP FROM HERE ##########
-          # ORIGINAL SCRIPT #
+#####       Cendrawasih         #####
 #####################################
 echo "INSTALLING SCRIPT..."
 
@@ -409,53 +528,32 @@ touch /root/.install.log
 cat >/root/tmp <<-END
 #!/bin/bash
 #vps
-### RizkiHdytstoreVPN $TANGGAL $MYIP
+### CendrawasihTunnel $TANGGAL $MYIP
 END
-####
-RIZKIHDYTPROJECT() {
-    data=($(cat /root/tmp | grep -E "^### " | awk '{print $2}'))
-    for user in "${data[@]}"; do
-        exp=($(grep -E "^### $user" "/root/tmp" | awk '{print $3}'))
-        d1=($(date -d "$exp" +%s))
-        d2=($(date -d "$Date_list" +%s))
-        exp2=$(((d1 - d2) / 86400))
-        if [[ "$exp2" -le "0" ]]; then
-            echo $user >/etc/.$user.ini
-        else
-            rm -f /etc/.$user.ini
-        fi
-    done
-    rm -f /root/tmp
-}
 
 function enable_services(){
     print_install "Restart servis"
     systemctl daemon-reload
     systemctl start netfilter-persistent
     systemctl enable --now nginx
-    systemctl enable --now chronyd
+    systemctl enable --now chrony
     systemctl enable --now xray
     systemctl enable --now rc-local
     systemctl enable --now dropbear
     systemctl enable --now openvpn
     systemctl enable --now cron
-    systemctl enable --now haproxy
     systemctl enable --now netfilter-persistent
     systemctl enable --now squid
     systemctl enable --now ws
-    systemctl enable --now client
-    systemctl enable --now server
+    systemctl enable --now ws-dropbear
+    systemctl enable --now ws-ovpn
+    systemctl enable --now ohp
+    systemctl enable --now stunnel
+    systemctl disable client
+    systemctl disable server
+    systemctl enable --now vnstat
     systemctl enable --now fail2ban
     wget -O /root/.config/rclone/rclone.conf "${REPO}rclone/rclone.conf" >/dev/null 2>&1
-    sleep 1
-# banner /etc/issue.net
-echo "Banner /etc/issue.net" >>/etc/ssh/sshd_config
-sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/issue.net"@g' /etc/default/dropbear
-
-# Ganti Banner
-wget -O /etc/issue.net "${REPO}/issue.net"
-
-sleep 4
 }
 
 function install_all() {
@@ -464,6 +562,8 @@ function install_all() {
     # add_domain
     pasang_ssl 
     install_xray >> /root/install.log
+    install_stunnel >> /root/install.log
+    install_websocket >> /root/install.log
     install_ovpn >> /root/install.log
     install_slowdns >> /root/install.log
     download_config >> /root/install.log
@@ -473,59 +573,47 @@ function install_all() {
 }
 
 function finish(){
-    TEXT="
-<u>INFORMATION VPS INSTALL SC</u>
-<code>TIME      : </code><code>${TIME}</code>
-<code>IPVPS     : </code><code>${MYIP}</code>
-<code>DOMAIN    : </code><code>${domain}</code>
-<code>ISP       : </code><code>${ISP}</code>
-<code>LOKASI    : </code><code>${CITY}</code>
-<code>USER      : </code><code>${NAMES}</code>
-<code>RAM       : </code><code>${RAMMS}MB</code>
-<code>LINUX     : </code><code>${OS}</code>
-"
-    curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
-    cp /etc/openvpn/*.ovpn /var/www/html/
-    # > sed -i "s/xxx/${domain}/g" /var/www/html/index.html
-    sed -i "s/xxx/${domain}/g" /etc/haproxy/haproxy.cfg
     sed -i "s/xxx/${MYIP}/g" /etc/squid/squid.conf
-    chown -R www-data:www-data /etc/msmtprc
+    chown -R cendrawasih:cendrawasih /etc/msmtprc
 
 
-    #Bersihkan History
+    # > Bersihkan History
+    alias bash2="bash --init-file <(echo '. ~/.bashrc; unset HISTFILE')"
+    clear
+    echo "    ┌─────────────────────────────────────────────────────┐" | tee -a /root/.install.log
+    echo "    │       >>> Service & Port                            │" | tee -a /root/.install.log
+    echo "    │   - OpenSSH                 : 39                    │" | tee -a /root/.install.log
+    echo "    │   - DNS (SLOWDNS)           : 443, 80, 53           │" | tee -a /root/.install.log
+    echo "    │   - Dropbear                : 109, 143              │" | tee -a /root/.install.log
+    # echo "    │   - Dropbear Websocket      : 443, 109              │" | tee -a /root/.install.log
+    echo "    │   - SSH Websocket SSL       : 443                   │" | tee -a /root/.install.log
+    echo "    │   - SSH Websocket           : 80                    │" | tee -a /root/.install.log
+    echo "    │   - OpenVPN SSL             : 443, 1194             │" | tee -a /root/.install.log
+    echo "    │   - OpenVPN Websocket SSL   : 443                   │" | tee -a /root/.install.log
+    echo "    │   - OpenVPN TCP             : 1194                  │" | tee -a /root/.install.log
+    echo "    │   - OpenVPN UDP             : 2200                  │" | tee -a /root/.install.log
+    echo "    │   - Nginx Webserver         : 81                    │" | tee -a /root/.install.log
+#    echo "    │   - Haproxy Loadbalancer    : 443, 80               │" | tee -a /root/.install.log
+    echo "    │   - DNS Server              : 443, 53               │" | tee -a /root/.install.log
+    echo "    │   - DNS Client              : 443, 88               │" | tee -a /root/.install.log
+    echo "    │   - XRAY DNS (SLOWDNS)      : 443, 80, 53           │" | tee -a /root/.install.log
+    echo "    │   - XRAY Vmess TLS          : 443                   │" | tee -a /root/.install.log
+    echo "    │   - XRAY Vmess gRPC         : 443                   │" | tee -a /root/.install.log
+    echo "    │   - XRAY Vmess None TLS     : 80                    │" | tee -a /root/.install.log
+    echo "    │   - XRAY Vless TLS          : 443                   │" | tee -a /root/.install.log
+    echo "    │   - XRAY Vless gRPC         : 443                   │" | tee -a /root/.install.log
+    echo "    │   - XRAY Vless None TLS     : 80                    │" | tee -a /root/.install.log
+    echo "    │   - Trojan gRPC             : 443                   │" | tee -a /root/.install.log
+    echo "    │   - Trojan WS               : 443                   │" | tee -a /root/.install.log
+    echo "    │   - Shadowsocks WS          : 443                   │" | tee -a /root/.install.log
+    echo "    │   - Shadowsocks gRPC        : 443                   │" | tee -a /root/.install.log
+    echo "    └─────────────────────────────────────────────────────┘" | tee -a /root/.install.log
     echo "    ┌─────────────────────────────────────────────────────┐"
-    echo "    │       >>> Service & Port                            │"
-    echo "    │   - Open SSH                : 443, 80, 39           │"
-    echo "    │   - DNS (SLOWDNS)           : 443, 80, 53           │"
-    echo "    │   - Dropbear                : 443, 109, 80          │"
-    echo "    │   - Dropbear Websocket      : 443, 109              │"
-    echo "    │   - SSH Websocket SSL       : 443                   │"
-    echo "    │   - SSH Websocket           : 80                    │"
-    echo "    │   - OpenVPN SSL             : 1194                   │"
-    echo "    │   - OpenVPN Websocket SSL   : 443                   │"
-    echo "    │   - OpenVPN TCP             : 1194             │"
-    echo "    │   - OpenVPN UDP             : 2200                  │"
-    echo "    │   - Nginx Webserver         : 443, 80, 81           │"
-    echo "    │   - Haproxy Loadbalancer    : 443, 80               │"
-    echo "    │   - DNS Server              : 443, 53               │"
-    echo "    │   - DNS Client              : 443, 88               │"
-    echo "    │   - XRAY DNS (SLOWDNS)      : 443, 80, 53           │"
-    echo "    │   - XRAY Vmess TLS          : 443                   │"
-    echo "    │   - XRAY Vmess gRPC         : 443                   │"
-    echo "    │   - XRAY Vmess None TLS     : 80                    │"
-    echo "    │   - XRAY Vless TLS          : 443                   │"
-    echo "    │   - XRAY Vless gRPC         : 443                   │"
-    echo "    │   - XRAY Vless None TLS     : 80                    │"
-    echo "    │   - Trojan gRPC             : 443                   │"
-    echo "    │   - Trojan WS               : 443                   │"
-    echo "    │   - Shadowsocks WS          : 443                   │"
-    echo "    │   - Shadowsocks gRPC        : 443                   │"
     echo "    │                                                     │"
     echo "    │      >>> Server Information & Other Features        │"
     echo "    │   - Timezone                : Asia/Jakarta (GMT +7) │"
-    echo "    │   - Autoreboot On    : $AUTOREB:00 $TIME_DATE GMT +7│"
-    echo "    │   - Auto Delete Expired Account  : per 23:30        │"
-    echo "    │   - FAuto Clear Log.   : Per 30 Menit               │"
+    echo "    │   - Autoreboot On           : 05:00 GMT +7          │"
+    echo "    │   - Auto Delete Expired Account                     │"
     echo "    │   - Fully automatic script                          │"
     echo "    │   - VPS settings                                    │"
     echo "    │   - Admin Control                                   │"
@@ -533,16 +621,13 @@ function finish(){
     echo "    │   - Full Orders For Various Services                │"
     echo "    └─────────────────────────────────────────────────────┘"
     secs_to_human "$(($(date +%s) - ${start}))"
-echo ""
-echo ""
-    echo -ne "         ${YELLOW}Please Reboot Your Vps${FONT} (y/n)? "
-    read REDDIR
-    if [ "$REDDIR" == "${REDDIR#[Yy]}" ]; then
-        exit 0
-    else
-        reboot
-    fi
-
+    # echo -ne "         ${YELLOW}Please Reboot Your Vps${FONT} (y/n)? "
+    # read REDDIR
+    # if [ "$REDDIR" == "${REDDIR#[Yy]}" ]; then
+    #     exit 0
+    # else
+    #     reboot
+    # fi
 }
 cd /tmp
 RIZKIHDYTPROJECT
