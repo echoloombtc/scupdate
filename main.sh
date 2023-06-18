@@ -492,9 +492,7 @@ function finish(){
     chown -R www-data:www-data /etc/msmtprc
 
 
-    # > Bersihkan History
-    alias bash2="bash --init-file <(echo '. ~/.bashrc; unset HISTFILE')"
-    clear
+    #Bersihkan History
     echo "    ┌─────────────────────────────────────────────────────┐"
     echo "    │       >>> Service & Port                            │"
     echo "    │   - Open SSH                : 443, 80, 39           │"
