@@ -557,7 +557,6 @@ first_setup
 dir_xray
 add_domain
 install_all
-finish  
 
 #rm ~/.bash_history
 sleep 10
