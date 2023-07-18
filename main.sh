@@ -530,7 +530,6 @@ function finish(){
     echo "    │                                                     │"
     echo "    │      >>> Server Information & Other Features        │"
     echo "    │   - Timezone                : Asia/Jakarta (GMT +7) │"
-    echo "    │   - Autoreboot On    : $AUTOREB:00 $TIME_DATE GMT +7│"
     echo "    │   - Auto Delete Expired Account  : per 23:30        │"
     echo "    │   - FAuto Clear Log.   : Per 30 Menit               │"
     echo "    │   - Fully automatic script                          │"
